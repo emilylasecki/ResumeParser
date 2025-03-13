@@ -1,0 +1,12 @@
+pandas
+pdfplumber
+pymupdf
+os
+spire.doc
+spacy
+BeautifulSoup4
+re
+openpyxl
+xlsxwriter
+xlsxwriter
+en_core_web_lg
