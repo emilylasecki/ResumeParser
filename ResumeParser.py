@@ -73,9 +73,9 @@ def iterateFiles(filename):
             # formatting specific to the way handshake pulls resumes
             name = ''.join([i for i in s if not i.isdigit()])  # remove any numbers in filename
             name = name[:-12]  # remove the last 12 character from filename - with handshake this leaves only the resume owners name
-            exp= afterCarefulConsideration(expstr)
-            newexp= newSoup(exp)
-            numberOfExp, expTitle = modifyTheContent2(newexp)
+            exp= addPartsofSpeech(expstr)
+            newexp= IndentContent(exp)
+            numberOfExp, expTitle = getContent(newexp)
             Pandas(name, expstr, links, data, filename, exp, numberOfExp, expTitle)
             break
         else:  # if resume doesn't parse, (no work experience section found, etc.) print nulls for fields
@@ -97,17 +97,17 @@ def Pandas(name, expstr, links, data, filename, exp, numberOfExp, expTitle):
     appended_df.to_excel(excelFile, engine='xlsxwriter', index= False)
 
 # add parts of speech 
-def afterCarefulConsideration(expstr):
-    nlp = spacy.load("en_core_web_lg")  # what is this?
+def addPartsofSpeech(expstr):
+    nlp = spacy.load("en_core_web_lg") 
     expstr = nlp(expstr)
     dataFrameContent= ''
     for token in expstr:
         dataFrameContent += (token.text + " " + token.lemma_+ " " + token.pos_+ " " +  token.tag_+ " " +  token.dep_+ " " +  token.shape_)
-    addNewLineChar(dataFrameContent)
+    countSpaces(dataFrameContent)
     return dataFrameContent
 
-# indents resume content string when a new line appears in the original resume
-def addNewLineChar(dataFrameContent):
+# counts the number of spaces in dataFrameContent
+def countSpaces(dataFrameContent):
     modifiedContent = ''
     i=1
     searchfor = "SPACE"
@@ -117,8 +117,8 @@ def addNewLineChar(dataFrameContent):
             # take from the first index to searchfor and append \n
             i=i +1
 
-# genuinely don't know what this does but if i remove it this will break
-def newSoup(dataFrameContent): 
+# replaces all instances of "SPACE" with \n. SPACE indicates that the resume indented to new line - so this adds proper line spacing back.
+def IndentContent(dataFrameContent): 
     with open("output.html", mode='w', encoding='utf-8') as f:
         modifiedContent = ''
         searchfor = "SPACE"
@@ -129,8 +129,9 @@ def newSoup(dataFrameContent):
             modifiedContent += ''.join(i) + "\n"
     return modifiedContent
 
-# search for job experiences: if a line starts with a capital letter and immediately proceeding is a bullet point, add it to a string as an experience
-def modifyTheContent2(modifiedContent):
+# search for job experiences: if a line starts with a capital letter add it to a string as an experience
+# Functionality to only extract lines where a bullet point immediately proceeds the experience was commented out of this version.  
+def getContent(modifiedContent):
     c=0
     i=0
     k=0
@@ -164,7 +165,7 @@ def modifyTheContent2(modifiedContent):
     return c, newlist 
 
 # remove characters that interupt duplicate search and remove duplicates
-def removeConsecutiveDuplicateWords(s):  # FIXME inprovment: make this not case sensitive and proper line breaks
+def removeConsecutiveDuplicateWords(s):  # possible improvement: make this not case sensitive and proper line breaks
     for row in s:
         s = s.replace(',', '')
         s = s.replace('(', '')
