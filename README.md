@@ -10,6 +10,8 @@ Testing on student resumes, this program ran with a 92% success rate. Certain re
 Clone this repository. Download all dependencies from requirements.txt. Add all resumes you wish to parse to the resumes folder (3 sample resumes are provided). Run python ResumeParser.py 
 
 Notes: 
-consider modifying lines 74 and 75 depending on your use case to prevent truncating file names. 
+
+Consider modifying lines 74 and 75 depending on your use case to prevent truncating file names. 
+
 As of 3/25/2025 spaCy is incompatible with python version 3.13. Downgrade to Python 3.12 to use this program.
 
